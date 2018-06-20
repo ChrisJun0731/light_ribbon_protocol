@@ -16,7 +16,7 @@ public class FrameUtilTest {
 	@Before
 	public void init(){
 		frame = new Frame();
-		frame.setControl(new byte[]{(byte) 0x60});
+		frame.setControl(new byte[]{(byte) 0x43});
 		frame.setData(new byte[]{(byte)0x00, (byte)0x55});
 		frame.setValid(FrameUtil.computeValid(frame));
 	}
@@ -37,6 +37,7 @@ public class FrameUtilTest {
 		byte valid = FrameUtil.computeValid(frame)[0];
 		System.out.println(valid);
 	}
+
 
 	@Test
 	public void parseFrame() throws Exception {

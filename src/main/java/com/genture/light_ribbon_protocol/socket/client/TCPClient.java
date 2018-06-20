@@ -21,7 +21,7 @@ public class TCPClient {
 	 * @param frame
 	 */
 	public static void sendFrame(Server server, Frame frame){
-		SocketChannel channel = ChannelPool.getChannel(server.getHost(), "write");
+		SocketChannel channel = ChannelPool.getChannel(server, "read");
 		byte[] frame_bytes = FrameUtil.getBytes(frame);
 		ByteBuffer buffer = ByteBuffer.allocate(frame_bytes.length);
 		buffer.put(frame_bytes);
@@ -41,7 +41,7 @@ public class TCPClient {
 
 		byte[] finalFrame = new byte[]{};
 
-		SocketChannel socketChannel = ChannelPool.getChannel(server.getHost(), "read");
+		SocketChannel socketChannel = ChannelPool.getChannel(server, "write");
 		ByteBuffer buffer = ByteBuffer.allocate(512);
 		try {
 			int bytesRead = socketChannel.read(buffer);

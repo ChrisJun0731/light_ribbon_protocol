@@ -55,28 +55,29 @@ public class FrameUtil {
 
 	public static byte[] computeValid(Frame frame){
 
-		byte valid = 0;
+		int valid = 0;
 
 		for(int i=0; i<Frame.header.length; i++){
-			valid += Frame.header[i];
+			valid += Frame.header[i]<0?Frame.header[i]+256:Frame.header[i];
 		}
 		for(int i=0; i<frame.getControl().length; i++){
-			valid += frame.getControl()[i];
+			valid += frame.getControl()[i]<0?frame.getControl()[i]+256:frame.getControl()[i];
 		}
 		for(int i=0; i<frame.getData_len().length; i++){
-			valid += frame.getData_len()[i];
+			valid += frame.getData_len()[i]<0?frame.getData_len()[i]+256:frame.getData_len()[i];
 		}
 		if(frame.getData()!=null){
 			for(int i=0; i<frame.getData().length; i++){
-				valid += frame.getData()[i];
+				valid += frame.getData()[i]<0?frame.getData()[i]+256:frame.getData()[i];
 			}
 		}
 
-		String val = String.valueOf(valid);
-		val = val.substring(val.length() - 2);
-		valid = Byte.parseByte(val);
+		String hex = Integer.toHexString(valid);
+		String val = hex.substring(hex.length()-2);
 
-		return new byte[]{valid};
+		byte result = Byte.valueOf(val, 16);
+
+		return new byte[]{result};
 	}
 
 	/**
