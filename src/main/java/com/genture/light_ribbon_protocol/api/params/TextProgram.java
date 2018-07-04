@@ -8,11 +8,12 @@ import java.util.List;
  */
 public class TextProgram {
 
+	private int num;
 	private List<Text> texts;
 
 	public byte[] getBytes(){
 
-		byte[] program_bytes = new byte[]{};
+		byte[] program_bytes = new byte[]{(byte)num};
 
 		for(int i=0; i<texts.size(); i++) {
 			Text text = texts.get(i);
@@ -30,5 +31,14 @@ public class TextProgram {
 
 	public void setTexts(List<Text> texts) {
 		this.texts = texts;
+		this.setNum(texts.size());
+	}
+
+	private int getNum() {
+		return num;
+	}
+
+	private void setNum(int num) {
+		this.num = num;
 	}
 }

@@ -13,12 +13,12 @@ public class Text {
 
 	private int id;
 	private int content_len;
-	private FontSize fontSize;
-	private FontColor fontColor;
-	private FontDisplay fontDisplay;
-	private FontSpeed fontSpeed;
-	private int stayTime;
-	private FontAlign fontAlign;
+	private FontSize fontSize = FontSize.Font16;
+	private FontColor fontColor = FontColor.GREEN;
+	private FontDisplay fontDisplay = FontDisplay.STATIC;
+	private FontSpeed fontSpeed = FontSpeed.SPEED5;
+	private int stayTime = 0;
+	private FontAlign fontAlign = FontAlign.MIDDLE;
 	private String content;
 
 	public int getId() {

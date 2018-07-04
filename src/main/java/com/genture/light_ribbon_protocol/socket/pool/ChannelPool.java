@@ -14,22 +14,22 @@ import java.util.Set;
  * Created by Administrator on 2018/6/11.
  */
 public class ChannelPool {
-	private static final int initialPoolSize = 5;
+
+	private static final int initialPoolSize = 1;
+	private static Set<SelectionKey> selectionKeys = null;
 
 	public static SocketChannel getChannel(Server server, String option){
+
 		boolean isRegistered = RegisterCenter.isRegistered(server.getHost());
-		SocketChannel socketChannel = null;
 		if(!isRegistered){
 			RegisterCenter.register(server);
 		}
 		try {
 			while(RegisterCenter.getSelector().select()!=0){
-				Set<SelectionKey> keys = RegisterCenter.getSelector().selectedKeys();
-				Iterator<SelectionKey> it = keys.iterator();
-				while(it.hasNext()){
-					SelectionKey key = it.next();
-//					boolean writeable = key.isWritable();
-//					boolean readable = key.isReadable();
+
+				selectionKeys = RegisterCenter.getSelector().selectedKeys();
+				SocketChannel socketChannel = null;
+				for(SelectionKey key: selectionKeys){
 					if(key.attachment().equals(server.getHost()) && key.isWritable() && option.equals("write")){
 						socketChannel = (SocketChannel)key.channel();
 						return socketChannel;
@@ -66,5 +66,12 @@ public class ChannelPool {
 		}
 
 		return channelSet;
+	}
+
+	/**
+	 * 清除已处理事件
+	 */
+	public static void clearDoneEvents(){
+		selectionKeys.clear();
 	}
 }

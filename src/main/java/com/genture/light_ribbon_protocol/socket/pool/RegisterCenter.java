@@ -35,13 +35,13 @@ public class RegisterCenter {
 	public static void register(Server server){
 		Boolean registered = isRegistered(server.getHost());
 		if(registered == false){
+			registerMap.put(server.getHost(), true);
+
 			Set<SocketChannel> channels = ChannelPool.initiateHostPool(server);
-			Iterator<SocketChannel> it = channels.iterator();
-			while(it.hasNext()){
-				SocketChannel channel = it.next();
+			for(SocketChannel channel: channels){
 				try {
+					//向通道注册写事件
 					channel.register(selector, SelectionKey.OP_WRITE, server.getHost());
-					channel.register(selector, SelectionKey.OP_READ, server.getHost());
 				} catch (ClosedChannelException e) {
 					e.printStackTrace();
 				}
@@ -63,7 +63,4 @@ public class RegisterCenter {
 		return selector;
 	}
 
-	public static void setSelector(Selector selector) {
-		RegisterCenter.selector = selector;
-	}
 }

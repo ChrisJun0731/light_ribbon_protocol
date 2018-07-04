@@ -24,15 +24,15 @@ public class LightRibbonClient {
 	public static void sendTextProgram(TextProgram textProgram, Server server){
 		Frame sendFrame = new Frame();
 
-		sendFrame.setControl(new byte[]{(byte)44});
+		sendFrame.setControl(new byte[]{(byte)0x44});
 		sendFrame.setData(textProgram.getBytes());
 		sendFrame.setValid(FrameUtil.computeValid(sendFrame));
 
 		TCPClient.sendFrame(server, sendFrame);
 
 		Frame recFrame = FrameUtil.parseFrame(TCPClient.receiveFrame(server));
-		if(recFrame.getControl()[0] == (byte)44){
-			if(recFrame.getData()[0] == (byte)55){
+		if(recFrame.getControl()[0] == (byte)0x44){
+			if(recFrame.getData()[0] == (byte)0x55){
 				System.out.println("文字节目发送成功！");
 			}
 		}else{
@@ -137,7 +137,11 @@ public class LightRibbonClient {
 		TCPClient.sendFrame(server, sendFrame);
 		Frame recFrame = FrameUtil.parseFrame(TCPClient.receiveFrame(server));
 		if(recFrame.getControl()[0] == (byte)0x60){
-			return true;
+			if (recFrame.getValid()[0] == FrameUtil.computeValid(recFrame)[0]) {
+				return true;
+			} else{
+				System.out.println("校验码错误！");
+			}
 		}
 
 		return false;
@@ -163,6 +167,8 @@ public class LightRibbonClient {
 		if(recFrame.getControl()[0] == (byte)0x4c){
 			if (recFrame.getValid()[0] == FrameUtil.computeValid(recFrame)[0]) {
 				System.out.println("亮度设置成功！");
+			}else{
+				System.out.println("校验码错误！");
 			}
 		}else{
 			System.out.println("接收帧错误！");
@@ -186,6 +192,8 @@ public class LightRibbonClient {
 		if(recFrame.getControl()[0] == (byte)0x6c){
 			if (recFrame.getValid()[0] == FrameUtil.computeValid(recFrame)[0]) {
 				return BrightParamUtil.parseData(recFrame);
+			}else{
+				System.out.println("校验码错误！");
 			}
 		}else{
 			System.out.println("接受帧错误！");

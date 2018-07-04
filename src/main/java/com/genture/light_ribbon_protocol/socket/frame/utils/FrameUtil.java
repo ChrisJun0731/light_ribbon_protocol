@@ -16,23 +16,26 @@ public class FrameUtil {
 	 */
 	public static byte[] getBytes(Frame frame){
 
-		int len = Frame.header.length + frame.getControl().length + frame.getData_len().length
-				+ (frame.getData()==null?0:frame.getData().length) + frame.getValid().length + Frame.tail.length;
-		byte[] frame_bytes = Arrays.copyOf(Frame.header, len);
+		int header_len = Frame.header.length;
+		int control_len = frame.getControl().length;
+		int data_len = frame.getData_len().length;
+		int dataLen = frame.getData()==null?0:frame.getData().length;
+		int valid_len = frame.getValid().length;
+		int tail_len = Frame.tail.length;
+		int total_len = header_len + control_len + data_len + dataLen + valid_len + tail_len;
 
-		System.arraycopy(frame.getControl(), 0, frame_bytes, Frame.header.length, frame.getControl().length);
-		System.arraycopy(frame.getData_len(), 0, frame_bytes,Frame.header.length+
-				frame.getControl().length, frame.getData_len().length);
+		byte[] frame_bytes = Arrays.copyOf(Frame.header, total_len);
+
+		System.arraycopy(frame.getControl(), 0, frame_bytes, header_len, control_len);
+		System.arraycopy(frame.getData_len(), 0, frame_bytes,header_len+control_len, data_len);
 		if(frame.getData() != null){
-			System.arraycopy(frame.getData(), 0, frame_bytes, Frame.header.length +
-					frame.getControl().length + frame.getData_len().length, frame.getData().length);
+			System.arraycopy(frame.getData(), 0, frame_bytes, header_len+control_len + data_len,
+					dataLen);
 		}
-		System.arraycopy(frame.getValid(), 0, frame_bytes, Frame.header.length +
-				frame.getControl().length + frame.getData_len().length + (frame.getData()==null?0:frame.getData().length),
-				frame.getValid().length);
-		System.arraycopy(Frame.tail, 0, frame_bytes, Frame.header.length +
-				frame.getControl().length + frame.getData_len().length +(frame.getData()==null?0:frame.getData_len().length) +
-				frame.getValid().length, Frame.tail.length);
+		System.arraycopy(frame.getValid(), 0, frame_bytes, header_len+control_len + data_len + dataLen,
+				valid_len);
+		System.arraycopy(Frame.tail, 0, frame_bytes, header_len+control_len + data_len + dataLen + valid_len,
+				tail_len);
 
 		return frame_bytes;
 	}
@@ -75,9 +78,9 @@ public class FrameUtil {
 		String hex = Integer.toHexString(valid);
 		String val = hex.substring(hex.length()-2);
 
-		byte result = Byte.valueOf(val, 16);
+		int result = Integer.valueOf(val, 16);
 
-		return new byte[]{result};
+		return new byte[]{(byte)result};
 	}
 
 	/**
@@ -86,25 +89,26 @@ public class FrameUtil {
 	 * @return
 	 */
 	public static Frame parseFrame(byte[] frame_bytes){
-
 		Frame frame = new Frame();
 
-		frame.setHeader(Arrays.copyOf(frame_bytes, frame.getHeader().length));
-		frame.setControl(Arrays.copyOfRange(frame_bytes, frame.getHeader().length, frame.getHeader().length +
-				frame.getControl().length));
-		frame.setData_len(Arrays.copyOfRange(frame_bytes, frame.getHeader().length + frame.getControl().length,
-				frame.getHeader().length + frame.getControl().length + frame.getData_len().length));
-		frame.setData(Arrays.copyOfRange(frame_bytes, frame.getHeader().length + frame.getControl().length +
-				frame.getData_len().length, frame.getHeader().length + frame.getControl().length +
-				frame.getData_len().length + (frame.getData()==null?0:frame.getData().length)));
-		frame.setValid(Arrays.copyOfRange(frame_bytes, frame.getHeader().length + frame.getControl().length +
-				frame.getData_len().length + frame.getData().length, frame.getHeader().length +
-				frame.getControl().length + frame.getData_len().length + (frame.getData()==null?0:frame.getData().length) +
-				frame.getValid().length));
-		frame.setTail(Arrays.copyOfRange(frame_bytes, frame.getHeader().length + frame.getControl().length +
-				frame.getData_len().length + (frame.getData()==null?0:frame.getData().length) + frame.getValid().length,
-				frame.getHeader().length + frame.getControl().length + frame.getData_len().length +
-						frame.getData().length + frame.getValid().length + frame.getTail().length));
+		int header_len = frame.getHeader().length;
+		int control_len = frame.getControl().length;
+		int data_len = frame.getData_len().length;
+		int dataLen;
+		int valid_len = frame.getValid().length;
+		int tail_len = frame.getTail().length;
+
+		frame.setHeader(Arrays.copyOf(frame_bytes, header_len));
+		frame.setControl(Arrays.copyOfRange(frame_bytes, header_len, header_len + control_len));
+		frame.setData_len(Arrays.copyOfRange(frame_bytes, header_len + control_len,
+				header_len + control_len + data_len));
+		dataLen = FrameUtil.convertByteAndInt(frame.getData_len());
+		frame.setData(Arrays.copyOfRange(frame_bytes, header_len + control_len + data_len,
+				header_len + control_len + data_len + dataLen));
+		frame.setValid(Arrays.copyOfRange(frame_bytes, header_len + control_len + data_len + dataLen,
+				header_len + control_len + data_len + dataLen + valid_len));
+		frame.setTail(Arrays.copyOfRange(frame_bytes, header_len + control_len + data_len + dataLen + valid_len,
+				header_len + control_len + data_len + dataLen + valid_len + tail_len));
 
 		return frame;
 	}
@@ -130,6 +134,6 @@ public class FrameUtil {
 	 */
 	public static int convertByteAndInt(byte[] storage){
 
-		return storage[0]*256 + storage[1];
+		return storage[0]<0?storage[0]+256:storage[0]*256 + storage[1]<0?storage[1]+256:storage[1];
 	}
 }

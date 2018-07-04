@@ -18,17 +18,17 @@ public class LightProgram {
 		for(int i=0; i<lights.size(); i++) {
 			int pos = program_bytes.length;
 			program_bytes = Arrays.copyOf(program_bytes, program_bytes.length + lights.get(i).getBytes().length);
-			System.arraycopy(lights.get(i), 0, program_bytes, pos, lights.get(i).getBytes().length);
+			System.arraycopy(lights.get(i).getBytes(), 0, program_bytes, pos, lights.get(i).getBytes().length);
 		}
 
 		return program_bytes;
 	}
 
-	public int getNum() {
+	private int getNum() {
 		return num;
 	}
 
-	public void setNum(int num) {
+	private void setNum(int num) {
 		this.num = num;
 	}
 
@@ -38,5 +38,6 @@ public class LightProgram {
 
 	public void setLights(List<Light> lights) {
 		this.lights = lights;
+		this.setNum(lights.size());
 	}
 }

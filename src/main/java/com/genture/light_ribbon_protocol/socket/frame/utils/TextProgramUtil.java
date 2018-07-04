@@ -28,7 +28,7 @@ public class TextProgramUtil {
 		byte[] data = frame.getData();
 		List<Text> texts = new ArrayList<>();
 
-		int pos = 0;
+		int pos = 1;
 		while(pos < data.length){
 			Text text = new Text();
 			text.setId(data[pos]);

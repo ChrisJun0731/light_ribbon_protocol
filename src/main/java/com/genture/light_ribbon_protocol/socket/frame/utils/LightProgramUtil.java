@@ -23,6 +23,9 @@ public class LightProgramUtil {
 
 		LightProgram program = new LightProgram();
 		byte[] data = frame.getData();
+		if(data.length == 0){
+			return null;
+		}
 		int num = data[0];
 		List<LightBrand> brands = new ArrayList<>();
 
@@ -36,7 +39,6 @@ public class LightProgramUtil {
 			brands.add(brand);
 		}
 
-		program.setNum(num);
 		program.setLights(convertLightBrand(brands));
 
 		return program;
